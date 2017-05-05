@@ -11,11 +11,16 @@
 |
 */
 
-$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+$factory->define (App\Models\User::class, function (Faker\Generator $faker) {
+    $date = $faker->date() . ' ' . $faker->time();
+    static $password;
     return [
         'name' => $faker->name,
         'email' => $faker->email,
-        'password' => bcrypt(str_random(10)),
-        'remember_token' => str_random(10),
+        'password' => $password ? $password : bcrypt ('123456'),
+        'is_admin' => false,
+        'remember_token' => str_random (10),
+        'created_at' => $date,
+        'updated_at' => $date,
     ];
 });
