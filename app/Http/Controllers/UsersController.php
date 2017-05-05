@@ -16,7 +16,7 @@ class UsersController extends Controller
     public function __construct ()
     {
         $this->middleware ('auth', [
-            'only' => ['edit', 'update', 'destroy']
+            'only' => ['edit', 'update', 'destroy', 'followings', 'followers']
         ]);
         $this->middleware('guest' , [
             'only' => ['create']
@@ -143,11 +143,6 @@ class UsersController extends Controller
         return redirect()->route('users.show', [$user]);
     }
 
-    public function test ()
-    {
-        $users = User::all();
-        dd('111');
-    }
     protected function sendEmailConfirmationTo ($user)
     {
         $view = 'emails.confirm';
@@ -159,5 +154,23 @@ class UsersController extends Controller
             $message->to($to)->subject($subject);
         });
 
+    }
+
+    /*关注的人*/
+    public function followings ($id)
+    {
+        $user = User::findOrFail($id);
+        $users = $user->followings()->paginate(8);
+        $title = '关注的人';
+        return view('user.show_follow', compact ('users', 'title'));
+    }
+
+    /*关注我的*/
+    public function followers ($id)
+    {
+        $user = User::findOrFail($id);
+        $users = $user->followers()->paginate(8);
+        $title = '关注的人';
+        return view('user.show_follow', compact ('users', 'title'));
     }
 }
