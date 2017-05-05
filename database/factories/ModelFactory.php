@@ -25,3 +25,12 @@ $factory->define (App\Models\User::class, function (Faker\Generator $faker) {
         'updated_at' => $date,
     ];
 });
+$factory->define (App\Models\Status::class, function (Faker\Generator $faker) {
+    $date = $faker->date() . ' ' . $faker->time();
+
+    return [
+        'content' => $faker->text(),
+        'created_at' => $date,
+        'updated_at' => $date,
+    ];
+});

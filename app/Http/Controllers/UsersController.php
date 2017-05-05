@@ -75,7 +75,10 @@ class UsersController extends Controller
     {
         //
         $user = User::findOrFail($id);
-        return view('user.show', compact ('user'));
+        $statuses = $user->statuses()
+                            ->orderBy('updated_at', 'desc')
+                            ->paginate(5);
+        return view('user.show', compact ('user','statuses'));
     }
 
     /**
@@ -142,8 +145,8 @@ class UsersController extends Controller
 
     public function test ()
     {
-        $user = User::findOrFail(1);
-        $this->sendEmailConfirmationTo($user);
+        $users = User::all();
+        dd('111');
     }
     protected function sendEmailConfirmationTo ($user)
     {
