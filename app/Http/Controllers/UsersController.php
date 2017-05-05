@@ -46,7 +46,7 @@ class UsersController extends Controller
         //
         return view('user.create');
     }
-
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -60,9 +60,9 @@ class UsersController extends Controller
             'password' => bcrypt($request->password),
             'email' => $request->email,
         ]);
-        session()->flash('success' , '欢迎，你将在这里开启新的旅程');
-        Auth::login($user);
-        return redirect()->route('users.show',[$user]);
+        $this->sendEmailConfirmationTo($user);
+        session()->flash('success' , '激活邮件已经发送到你的邮箱');
+        return redirect()->back();
     }
 
     /**
@@ -126,5 +126,35 @@ class UsersController extends Controller
         $user->delete();
         session()->flash('success', '成功删除用户！');
         return redirect()->back();
+    }
+
+    public function confirmEmail ($token)
+    {
+        $user = User::where('activation_token', $token)->firstOrFail();
+        $user->activated = true;
+        $user->activation_token = null;
+        $user->save();
+
+        Auth::login($user);
+        session()->flash('success', '恭喜你，激活成功！');
+        return redirect()->route('users.show', [$user]);
+    }
+
+    public function test ()
+    {
+        $user = User::findOrFail(1);
+        $this->sendEmailConfirmationTo($user);
+    }
+    protected function sendEmailConfirmationTo ($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $to = $user->email;
+        $subject = "感谢注册 laravel-china-test 应用！请确认你的邮箱。";
+        /*此处的发送人是在laravel 的 config/mail.php中，其他设置在 .env*/
+        \Mail::queue($view, $data, function ($message) use ($to, $subject) {
+            $message->to($to)->subject($subject);
+        });
+
     }
 }

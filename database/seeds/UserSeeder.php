@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
         $user = User::find(1);
         $user->name = 'laragh';
         $user->is_admin = true;
+        $user->activated = true;
         $user->email = 'laragh@163.com';
         $user->password = bcrypt('123456');
         $user->save();

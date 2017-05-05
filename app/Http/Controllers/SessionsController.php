@@ -15,38 +15,45 @@ class SessionsController extends Controller
     public function __construct ()
     {
         $this->middleware ('auth', [
-            'only' => ['edit', 'update']
+            'only' => [ 'edit', 'update' ]
         ]);
-        $this->middleware('guest', [
-            'only' => ['create']
+        $this->middleware ('guest', [
+            'only' => [ 'create' ]
         ]);
 
     }
+
     //
     public function create ()
     {
-        return view('sessions.create');
+        return view ('sessions.create');
     }
 
     public function store (UserLoginInput $request)
     {
         $user = [
-            'email'    => $request->email,
+            'email' => $request->email,
             'password' => $request->password,
         ];
-        if(Auth::attempt($user, $request->has('remember'))) {
-            session()->flash('success' , '欢迎回来'.Auth::user()->name);
-            return redirect()->intended(route('users.show',[Auth::user()]));
+        if (Auth::attempt ($user, $request->has ('remember'))) {
+            if (Auth::user ()->activated) {
+                session ()->flash ('success', '欢迎回来'.Auth::user ()->name);
+                return redirect ()->intended (route ('users.show', [ Auth::user () ]));
+            } else {
+                Auth::logout ();
+                session ()->flash ('warning', '你的账号未激活，请检查邮箱中的注册邮件进行激活。');
+                return redirect ()->back ()->withInput ();
+            }
         } else {
-            session()->flash('danger' , '很抱歉，您的邮箱和密码不匹配');
-            return redirect()->back()->withInput();
+            session ()->flash ('danger', '很抱歉，您的邮箱和密码不匹配');
+            return redirect ()->back ()->withInput ();
         }
     }
 
     public function destroy ()
     {
-        Auth::logout();
-        session()->flash('success', '您已成功退出！');
-        return redirect()->route('login');
+        Auth::logout ();
+        session ()->flash ('success', '您已成功退出！');
+        return redirect ()->route ('login');
     }
 }
