@@ -38,6 +38,6 @@ Route::post('password/reset', 'Auth\PasswordController@postReset')->name('passwo
 Route::get('/users/{id}/followings', 'UsersController@followings')->name('users.followings');
 Route::get('/users/{id}/followers', 'UsersController@followers')->name('users.followers');
 
-
+// 关注和取消关注按钮的操作
 Route::post('/users/followers/{id}', 'FollowersController@store')->name('followers.store');
 Route::delete('/users/followers/{id}', 'FollowersController@destroy')->name('followers.destroy');
